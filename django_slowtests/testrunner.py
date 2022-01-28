@@ -165,7 +165,6 @@ class DiscoverSlowestTestsRunner(DiscoverRunner):
         )
 
     def generate_report(self, test_results, result):
-        test_result_count = len(test_results)
         SLOW_TEST_THRESHOLD_MS = getattr(settings, 'SLOW_TEST_THRESHOLD_MS', 0)
 
         if self.report_path:
@@ -182,7 +181,7 @@ class DiscoverSlowestTestsRunner(DiscoverRunner):
             with open(self.report_path, 'w') as outfile:
                 json.dump(data, outfile)
         else:
-            if test_result_count:
+            if test_result_count := len(test_results):
                 if SLOW_TEST_THRESHOLD_MS:
                     print("\n{r} slowest tests over {ms}ms:".format(
                         r=test_result_count, ms=SLOW_TEST_THRESHOLD_MS)
@@ -203,8 +202,7 @@ class DiscoverSlowestTestsRunner(DiscoverRunner):
             settings, 'TESTS_REPORT_TMP_FILES_PREFIX', '_tests_report_'
         )
         files = glob.glob("{}*.txt".format(file_prefix))
-        for report_file in files:
-            yield report_file
+        yield from files
 
     def get_timings(self):
         timings = []
